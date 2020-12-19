@@ -192,26 +192,40 @@ namespace Shop.Database.Migrations
 
                     b.Property<string>("City");
 
+                    b.Property<string>("Email");
+
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
                     b.Property<string>("OrderRef");
 
+                    b.Property<string>("PhoneNumber");
+
                     b.Property<string>("PostCode");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("StripeReference");
 
                     b.HasKey("Id");
 
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Shop.Domain.Models.OrderProduct", b =>
+            modelBuilder.Entity("Shop.Domain.Models.OrderStock", b =>
                 {
-                    b.Property<int>("ProductId");
+                    b.Property<int>("StockId");
 
                     b.Property<int>("OrderId");
 
-                    b.HasKey("ProductId", "OrderId");
+                    b.Property<int>("Qty");
+
+                    b.HasKey("StockId", "OrderId");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderProducts");
+                    b.ToTable("OrderStocks");
                 });
 
             modelBuilder.Entity("Shop.Domain.Models.Product", b =>
@@ -248,6 +262,27 @@ namespace Shop.Database.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Stock");
+                });
+
+            modelBuilder.Entity("Shop.Domain.Models.StockOnHold", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("ExpiryDate");
+
+                    b.Property<int>("Qty");
+
+                    b.Property<string>("SessionId");
+
+                    b.Property<int>("StockId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StockId");
+
+                    b.ToTable("StockOnHolds");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -295,16 +330,16 @@ namespace Shop.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Shop.Domain.Models.OrderProduct", b =>
+            modelBuilder.Entity("Shop.Domain.Models.OrderStock", b =>
                 {
                     b.HasOne("Shop.Domain.Models.Order", "Order")
-                        .WithMany("OrderProducts")
+                        .WithMany("OrderStocks")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Shop.Domain.Models.Product", "Product")
-                        .WithMany("OrderProducts")
-                        .HasForeignKey("ProductId")
+                    b.HasOne("Shop.Domain.Models.Stock", "Stock")
+                        .WithMany("OrderStocks")
+                        .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -313,6 +348,14 @@ namespace Shop.Database.Migrations
                     b.HasOne("Shop.Domain.Models.Product", "Product")
                         .WithMany("Stock")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Shop.Domain.Models.StockOnHold", b =>
+                {
+                    b.HasOne("Shop.Domain.Models.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
